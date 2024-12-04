@@ -3,10 +3,10 @@ from pydantic import BaseModel
 import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 
-# Initialize FastAPI app
+
 app = FastAPI()
 
-# Allow all origins for CORS (cross-origin requests)
+
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
