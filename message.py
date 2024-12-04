@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import pymysql
+import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize FastAPI app
@@ -16,14 +16,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database connection parameters
-db_config = {
-    'host': '192.168.0.127',
-    'user': 'root',
-    'password': 'root',
-    'database': 'home_foods',
-}
-
+def db_conn():
+    conn = mysql.connector.connect(
+        host='b1zolhaun1gzw2rk6kam-mysql.services.clever-cloud.com',
+        user='uvhvti04cft8hyqp',
+        password='a0dLhRmVOKPMJjI9yUDa',
+        database='b1zolhaun1gzw2rk6kam'
+    )
+    return conn
 
 
 class enquiry(BaseModel):
@@ -33,27 +33,22 @@ class enquiry(BaseModel):
     message: str
 
 
-
-
-##### form data
-
 @app.post("/enquiry")
 async def create_analytics_report(report: enquiry):
-    conn = pymysql.connect(**db_config)
+    conn = db_conn()
+    print("connected")
     cursor = conn.cursor()
     try:
-
-
-        # SQL query to insert data
         query = """
                 INSERT INTO personal_form (name, phone_no, email_id, message)
                 VALUES (%s, %s, %s, %s)
             """
         values = (report.name, report.phone_no, report.email_id, report.message)
-
+        print(values)
         # Execute the query and commit the transaction
         cursor.execute(query, values)
         conn.commit()
+        print("committed")
         return {"status": "success", "statusCode": 200, "message": "successful"}
 
     except Exception as e:
@@ -61,7 +56,7 @@ async def create_analytics_report(report: enquiry):
                 "detail": f"Error while inserting data {e}"}
     finally:
         cursor.close()
-        conn.close
+        conn.close()
 
 
 if __name__ == "__main__":
